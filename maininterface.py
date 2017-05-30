@@ -96,9 +96,12 @@ class Ui_MainWindow(object):
         self.action_new_tag.setObjectName("action_new_tag")
         self.action_walk_roots = QtWidgets.QAction(MainWindow)
         self.action_walk_roots.setObjectName("action_walk_roots")
+        self.action_manage_roots = QtWidgets.QAction(MainWindow)
+        self.action_manage_roots.setObjectName("action_manage_roots")
         self.menuFile.addAction(self.actionClose)
         self.menuEdit.addAction(self.action_new_tag)
         self.menuEdit.addAction(self.action_walk_roots)
+        self.menuEdit.addAction(self.action_manage_roots)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
 
@@ -107,7 +110,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Photag"))
         self.image_view_holder.setTitle(_translate("MainWindow", "Images"))
         self.tag_tree_holder.setTitle(_translate("MainWindow", "Tag Tree"))
         self.label_2.setText(_translate("MainWindow", "Rating"))
@@ -118,5 +121,6 @@ class Ui_MainWindow(object):
         self.action_new_tag.setText(_translate("MainWindow", "New Tag"))
         self.action_new_tag.setShortcut(_translate("MainWindow", "Ctrl+Shift+T"))
         self.action_walk_roots.setText(_translate("MainWindow", "Update All Roots"))
+        self.action_manage_roots.setText(_translate("MainWindow", "Manage Roots"))
 
 from MediaLabel import MediaLabel

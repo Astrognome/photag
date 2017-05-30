@@ -85,6 +85,19 @@ class TagQuery(Query):
             self.queries.append(TagQuery(child))
         self.medias = self.tag.medias
 
+class MediaWithTagsQuery(Query):
+    def __init__(self, tags, db):
+        super().__init__("MediWithTagsQuery")
+        self.tags = tags
+        self.db = db
+
+    def execute(self):
+        print(self.tags)
+        media_query = self.db.session.query(Media).filter(Media.tags.contains(self.tags[0]))
+        for tag in self.tags[1:]:
+            media_query = media_query.filter(Media.tags.contains(tag))
+        self.medias = media_query.all()
+
 class WholeTreeQuery(Query):
     def __init__(self, db):
         super().__init__("WholeTreeQuery")
@@ -141,6 +154,15 @@ class PhotagDB():
             session.commit()
         return new_dir
 
+    def remDir(self, dir):
+        subDirs = dir.children
+        for child in children:
+            remDir(dir)
+        medias = dir.medias
+        for media in medias:
+            self.session.delete(media)
+        self.session.delete(dir)
+
     def addMedia(self, filename, directory):
         session = self.session
         new_media = session.query(Media).filter(Media.directory == directory).filter(Media.file_name == filename).first()
@@ -169,6 +191,14 @@ class PhotagDB():
     def stringQuery(self, query_string):
         if query_string == "TAG_TREE":
             return TagTreeQuery(self)
-        elif query_string == "WHOLE_TREE":
+        elif query_string == "WHOLE_TREE" or query_string == "":
             return WholeTreeQuery(self)
+        splits = query_string.split(';')
+        for split in splits:
+            if split.startswith("HAS_TAGS"):
+                tags = split.split(' ')[1:]
+                tag_obs = []
+                for tag in tags:
+                    tag_obs.append(self.session.query(Tag).filter(Tag.name == tag).first())
+                return MediaWithTagsQuery(tag_obs, self)
 

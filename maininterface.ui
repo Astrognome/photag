@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Photag</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -137,6 +137,7 @@
     </property>
     <addaction name="action_new_tag"/>
     <addaction name="action_walk_roots"/>
+    <addaction name="action_manage_roots"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -158,6 +159,11 @@
   <action name="action_walk_roots">
    <property name="text">
     <string>Update All Roots</string>
+   </property>
+  </action>
+  <action name="action_manage_roots">
+   <property name="text">
+    <string>Manage Roots</string>
    </property>
   </action>
  </widget>

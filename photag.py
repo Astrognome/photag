@@ -5,6 +5,7 @@ from PyQt5.QtGui import QImageReader, QImage, QPixmap
 import sys
 
 import maininterface
+from managerootsinterface import ManageRootsInterface
 from MediaLabel import MediaLabel
 from ImageViewModel import ImageViewModel, ImageViewNode
 from TagViewModel import TagViewModel, TagViewNode
@@ -68,6 +69,10 @@ class Photag():
         new_query = self.db.stringQuery(self.form.query_bar.text())
         self.form.image_tree_view.model().setQuery(new_query)
 
+    def manageRoots(self):
+        self.manageRootsForm = ManageRootsInterface(self.db)
+        self.manageRootsForm.show()
+
     def main(self):
         self.app = QApplication(sys.argv)
         self.form = MainInterface()
@@ -75,8 +80,6 @@ class Photag():
 
         # db stuff
         self.db = PhotagDB()
-        self.db.addDir("/media/storage/pictures/interstuff")
-        self.db.addDir("/media/storage/pictures/cs/final")
 
         baseQuery = WholeTreeQuery(self.db)
         self.form.image_tree_view.setModel(ImageViewModel(baseQuery))
@@ -87,6 +90,8 @@ class Photag():
         self.form.action_walk_roots.triggered.connect(self.walkAllRoots)
         self.form.tag_tree_view.doubleClicked.connect(self.tagCurrentSelected)
         self.form.query_bar.returnPressed.connect(self.enterQuery)
+
+        self.form.action_manage_roots.triggered.connect(self.manageRoots)
 
         self.app.exec_()
 
