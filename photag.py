@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QLineEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QLineEdit, QMenu
 from PyQt5.QtGui import QImageReader, QImage, QPixmap
 import sys
 
@@ -10,7 +10,7 @@ from MediaLabel import MediaLabel
 from ImageViewModel import ImageViewModel, ImageViewNode
 from TagViewModel import TagViewModel, TagViewNode
 
-from Database import PhotagDB, Directory, WholeTreeQuery, AllMediaFlatQuery, TagTreeQuery, Tag, Query
+from Database import PhotagDB, Directory, DirQuery, WholeTreeQuery, AllMediaFlatQuery, TagTreeQuery, Tag, Query
 
 
 class MainInterface(QMainWindow, maininterface.Ui_MainWindow):
@@ -73,6 +73,15 @@ class Photag():
         self.manageRootsForm = ManageRootsInterface(self.db)
         self.manageRootsForm.show()
 
+    def imageTreeContextMenu(self, point):
+        index = self.form.image_tree_view.indexAt(point)
+        if index.isValid():
+            query = index.internalPointer().query
+            #this node is a directory
+            if query and type(query) == DirQuery:
+                self.db.walkDir(query.directory)
+
+
     def main(self):
         self.app = QApplication(sys.argv)
         self.form = MainInterface()
@@ -80,6 +89,9 @@ class Photag():
 
         # db stuff
         self.db = PhotagDB()
+
+        # context menu
+        self.form.image_tree_view.customContextMenuRequested.connect(self.imageTreeContextMenu)
 
         baseQuery = WholeTreeQuery(self.db)
         self.form.image_tree_view.setModel(ImageViewModel(baseQuery))

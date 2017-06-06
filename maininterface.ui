@@ -30,6 +30,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QTreeView" name="image_tree_view">
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>

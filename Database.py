@@ -163,23 +163,26 @@ class PhotagDB():
             self.session.delete(media)
         self.session.delete(dir)
 
-    def addMedia(self, filename, directory):
+    def addMedia(self, filename, directory, commit = True):
         session = self.session
         new_media = session.query(Media).filter(Media.directory == directory).filter(Media.file_name == filename).first()
         if not new_media:
             new_media = Media(file_name=filename, directory=directory)
             session.add(new_media)
-            session.commit()
+            if commit:
+                session.commit()
         return new_media
 
-    def walkDir(self, dir_to_walk):
+    def walkDir(self, dir_to_walk, commit = True):
         full_path = dir_to_walk.getFullPath()
         listing = os.listdir(full_path)
         for item in listing:
             if os.path.isdir(os.path.join(full_path, item)):
-                self.walkDir(self.addDir(item, dir_to_walk))
+                self.walkDir(self.addDir(item, dir_to_walk), False)
             elif os.path.isfile(os.path.join(full_path, item)):
-                self.addMedia(item, dir_to_walk)
+                self.addMedia(item, dir_to_walk, False)
+        if commit:
+            self.session.commit()
 
     def walkAllRoots(self):
         session = self.db_session()

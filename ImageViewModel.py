@@ -71,6 +71,7 @@ class ImageViewModel(QAbstractItemModel):
 
     def walkQueryAsNodes(self, p_node, query):
         query.execute()
+        p_node.query = query
         children = query.queries 
         for child in children:
             new_node = ImageViewNode(child.name)
@@ -99,6 +100,7 @@ class ImageViewNode(object):
         self._row = 0
 
         self.media = None
+        self.query = None
 
     def data(self, in_column):
         if in_column >= 0 and in_column < len(self._data):

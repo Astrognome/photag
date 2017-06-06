@@ -27,6 +27,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.image_view_holder)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.image_tree_view = QtWidgets.QTreeView(self.image_view_holder)
+        self.image_tree_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.image_tree_view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.image_tree_view.setObjectName("image_tree_view")
         self.verticalLayout_4.addWidget(self.image_tree_view)
