@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QLineEdit, QMenu
-from PyQt5.QtGui import QImageReader, QImage, QPixmap
+from PyQt5.QtGui import QImageReader, QImage, QPixmap, QIcon, QPixmap
+from PyQt5.QtWidgets import QListWidgetItem
 import sys
 
 import maininterface
@@ -11,6 +12,7 @@ from ImageViewModel import ImageViewModel, ImageViewNode
 from TagViewModel import TagViewModel, TagViewNode
 
 from Database import PhotagDB, Directory, DirQuery, WholeTreeQuery, AllMediaFlatQuery, TagTreeQuery, Tag, Query
+from Thumbnailer import Thumbnailer
 
 
 class MainInterface(QMainWindow, maininterface.Ui_MainWindow):
@@ -21,7 +23,6 @@ class MainInterface(QMainWindow, maininterface.Ui_MainWindow):
 class Photag():
     def __init__(self):
         pass
-
 
     def newTag(self, event):
         text, okay = QInputDialog.getText(None, "New Tag",
@@ -61,6 +62,13 @@ class Photag():
             tags = node.media.tags
             for tag in tags:
                 taglist.addItem(tag.name)
+        elif node.query:
+            self.form.thumbnail_list.clear()
+            medias = node.query.medias
+            for media in medias:
+                self.form.thumbnail_list.addItem(QListWidgetItem(QIcon(QPixmap(self.thumbnailer.requestThumbnail(media.getFullPath(), commit = False))),
+                                                                 media.file_name))
+            self.thumbnailer.conn.commit()
 
     def walkAllRoots(self):
         self.db.walkAllRoots()
@@ -89,6 +97,7 @@ class Photag():
 
         # db stuff
         self.db = PhotagDB()
+        self.thumbnailer = Thumbnailer()
 
         # context menu
         self.form.image_tree_view.customContextMenuRequested.connect(self.imageTreeContextMenu)
