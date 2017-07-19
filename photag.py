@@ -3,6 +3,7 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QLineEdit, QMenu
 from PyQt5.QtGui import QImageReader, QImage, QPixmap, QIcon, QPixmap
 from PyQt5.QtWidgets import QListWidgetItem
+from PyQt5.QtCore import pyqtSlot, QThread
 import sys
 
 import maininterface
@@ -64,11 +65,15 @@ class Photag():
                 taglist.addItem(tag.name)
         elif node.query:
             self.form.thumbnail_list.clear()
+            self.thumbnailer.cancelAllRequests()
             medias = node.query.medias
             for media in medias:
-                self.form.thumbnail_list.addItem(QListWidgetItem(QIcon(QPixmap(self.thumbnailer.requestThumbnail(media.getFullPath(), commit = False))),
-                                                                 media.file_name))
+                self.thumbnailer.requestThumbnail(media)
             self.thumbnailer.conn.commit()
+
+    def addThumb(self, thumb, filename):
+            self.form.thumbnail_list.addItem(QListWidgetItem(QIcon(QPixmap(thumb)),
+                                                                 filename))
 
     def walkAllRoots(self):
         self.db.walkAllRoots()
@@ -97,7 +102,14 @@ class Photag():
 
         # db stuff
         self.db = PhotagDB()
+
+        #setup thumbnailer
+        self.thumbnailerThread = QThread()
         self.thumbnailer = Thumbnailer()
+        self.thumbnailer.moveToThread(self.thumbnailerThread)
+        self.thumbnailer.thumbnailFetched.connect(self.addThumb)
+        self.thumbnailerThread.started.connect(self.thumbnailer.processRequests)
+        self.thumbnailerThread.start()
 
         # context menu
         self.form.image_tree_view.customContextMenuRequested.connect(self.imageTreeContextMenu)
